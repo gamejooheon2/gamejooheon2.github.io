@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>상소설 시즌1 퀴즈 - 50문제</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+    background: #faf9f5;
+    color: #1a1a1a;
+    line-height: 1.6;
+    padding: 20px;
+    min-height: 100vh;
+  }
+  .container {
+    max-width: 680px;
+    margin: 0 auto;
+    background: #fff;
+    border-radius: 16px;
+    padding: 32px 24px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+  h1 { font-size: 24px; font-weight: 500; margin-bottom: 8px; text-align: center; }
+  .subtitle { font-size: 14px; color: #6b6b6b; text-align: center; margin-bottom: 24px; }
+  .rules {
+    background: #f5f4ee;
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin-bottom: 24px;
+    font-size: 14px;
+  }
+  .rules-title { font-weight: 500; margin-bottom: 6px; }
+  .rules-item { color: #6b6b6b; margin-top: 2px; }
+  button {
+    font-family: inherit;
+    font-size: 15px;
+    padding: 10px 20px;
+    border: 0.5px solid rgba(0,0,0,0.2);
+    background: transparent;
+    color: #1a1a1a;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  button:hover { background: rgba(0,0,0,0.04); }
+  button:active { transform: scale(0.98); }
+  button:disabled { cursor: default; }
+  .primary-btn {
+    background: #1a1a1a;
+    color: #fff;
+    border: none;
+    padding: 12px 28px;
+    font-weight: 500;
+  }
+  .primary-btn:hover { background: #333; }
+  .center { text-align: center; }
+  .shuffle-label {
+    display: inline-block;
+    margin-top: 14px;
+    font-size: 13px;
+    color: #6b6b6b;
+    cursor: pointer;
+  }
+  .progress-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13px;
+    color: #6b6b6b;
+    margin-bottom: 12px;
+  }
+  .progress-bar-bg {
+    height: 4px;
+    background: #f0eee6;
+    border-radius: 2px;
+    overflow: hidden;
+    margin-bottom: 24px;
+  }
+  .progress-bar {
+    height: 100%;
+    background: #1a1a1a;
+    transition: width 0.3s;
+  }
+  .question {
+    font-size: 17px;
+    font-weight: 500;
+    line-height: 1.6;
+    margin-bottom: 20px;
+  }
+  .options { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
+  .option-btn {
+    text-align: left;
+    padding: 12px 16px;
+    font-size: 15px;
+    line-height: 1.5;
+    white-space: normal;
+    width: 100%;
+  }
+  .option-num {
+    display: inline-block;
+    width: 22px;
+    color: #6b6b6b;
+    font-weight: 500;
+  }
+  .option-correct {
+    background: #dff5e3 !important;
+    color: #166534 !important;
+    border-color: #86efac !important;
+  }
+  .option-wrong {
+    background: #fde2e2 !important;
+    color: #991b1b !important;
+    border-color: #fca5a5 !important;
+  }
+  .option-faded { opacity: 0.5; }
+  .feedback {
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin-bottom: 16px;
+    font-size: 14px;
+    display: none;
+  }
+  .feedback-correct { background: #dff5e3; color: #166534; }
+  .feedback-wrong { background: #fde2e2; color: #991b1b; }
+  .next-row { display: flex; justify-content: flex-end; }
+  .next-btn { display: none; }
+  .result-header { text-align: center; margin-bottom: 24px; }
+  .result-emoji { font-size: 22px; font-weight: 500; margin-bottom: 8px; }
+  .result-score { font-size: 32px; font-weight: 500; margin-bottom: 4px; }
+  .result-comment { font-size: 14px; color: #6b6b6b; }
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  .stat-card {
+    background: #f5f4ee;
+    border-radius: 8px;
+    padding: 12px 14px;
+  }
+  .stat-label { font-size: 12px; color: #6b6b6b; margin-bottom: 4px; }
+  .stat-value { font-size: 22px; font-weight: 500; }
+  .review-title { font-size: 15px; font-weight: 500; margin-bottom: 10px; }
+  .review-list { display: flex; flex-direction: column; gap: 10px; max-height: 360px; overflow-y: auto; }
+  .review-item {
+    background: #f5f4ee;
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  .review-q { margin-bottom: 4px; }
+  .review-wrong-ans { color: #991b1b; }
+  .review-correct-ans { color: #166534; }
+  .button-row {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 24px;
+  }
+  .hidden { display: none; }
+  .footer {
+    text-align: center;
+    margin-top: 24px;
+    font-size: 12px;
+    color: #9a9a9a;
+  }
+  @media (max-width: 600px) {
+    body { padding: 12px; }
+    .container { padding: 24px 18px; }
+    h1 { font-size: 20px; }
+    .question { font-size: 16px; }
+    .option-btn { font-size: 14px; padding: 11px 14px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <div id="start-screen">
+    <h1>상소설 시즌1 퀴즈</h1>
+    <div class="subtitle">총 50문제 · 4지선다</div>
+    <div class="rules">
+      <div class="rules-title">규칙</div>
+      <div class="rules-item">· 보기를 클릭하면 즉시 정답 여부를 알려줍니다.</div>
+      <div class="rules-item">· 마지막에 점수와 틀린 문제를 다시 볼 수 있습니다.</div>
+      <div class="rules-item">· 깍! 깍! 깍! 장! 풍! 장! 풍!</div>
+    </div>
+    <div class="center">
+      <button id="start-btn" class="primary-btn">퀴즈 시작하기</button>
+      <div>
+        <label class="shuffle-label">
+          <input type="checkbox" id="shuffle-toggle"> 문제 순서 섞기
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <div id="quiz-screen" class="hidden">
+    <div class="progress-info">
+      <span id="progress-text">문제 1 / 50</span>
+      <span id="score-text">정답 0 · 오답 0</span>
+    </div>
+    <div class="progress-bar-bg">
+      <div id="progress-bar" class="progress-bar" style="width: 2%;"></div>
+    </div>
+    <div id="question-text" class="question"></div>
+    <div id="options-container" class="options"></div>
+    <div id="feedback" class="feedback"></div>
+    <div class="next-row">
+      <button id="next-btn" class="next-btn">다음 문제 →</button>
+    </div>
+  </div>
+
+  <div id="result-screen" class="hidden">
+    <div class="result-header">
+      <div id="result-emoji" class="result-emoji"></div>
+      <div id="result-score" class="result-score"></div>
+      <div id="result-comment" class="result-comment"></div>
+    </div>
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-label">정답</div>
+        <div id="stat-correct" class="stat-value">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">오답</div>
+        <div id="stat-wrong" class="stat-value">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">정답률</div>
+        <div id="stat-rate" class="stat-value">0%</div>
+      </div>
+    </div>
+    <div id="wrong-review"></div>
+    <div class="button-row">
+      <button id="retry-wrong-btn">틀린 문제만 다시 풀기</button>
+      <button id="restart-btn" class="primary-btn">처음부터 다시 풀기</button>
+    </div>
+  </div>
+
+  <div class="footer">상소설 시즌1 · 30단계의 카이스트 광기 모음</div>
+</div>
+
+<script>
+(function() {
+  const QUESTIONS = [
+    {q: "제상후가 처음 면접 본 동아리 이름은?", o: ["CatRage Lab", "DASH:ED", "KAIST 연애기획단", "제상후 격리 동아리"], a: 1},
+    {q: "제상후가 지오메트리대쉬 동아리에서 사망한 맵 이름은?", o: ["Stereo Madness", "Geometry Nyanko Dash", "Geometric Insanity", "Stereo Insanity"], a: 0},
+    {q: "제상후가 냥코대전쟁에 쏟아부었다고 밝힌 금액은?", o: ["70만원", "210만원", "400만원", "418만원"], a: 2},
+    {q: "냥코 동아리 면접에서 쫓겨난 후 들통난 충격적 진실은?", o: ["다른 학교 학생이었음", "카이스트 학생이 아니었음", "면접관이 아버지였음", "이미 합격한 상태였음"], a: 1},
+    {q: "장가희의 닉네임은?", o: ["CatRage", "GahiFlow", "미묘냥π", "상풍이TV"], a: 1},
+    {q: "장가희와 제상후가 처음 만난 장소는?", o: ["학식", "동아리방", "정문 앞 통닭집 2층", "도서관"], a: 2},
+    {q: "MT에서 제상후의 장기자랑 내용은?", o: ["마술쇼", "댄스", "π 314자리 + 냥코 47지역 클리어", "노래 부르기"], a: 2},
+    {q: "조별과제 D조에 속하지 않은 인물은?", o: ["박준영", "정우 딕", "장가희", "카재민"], a: 3},
+    {q: "조별과제에서 제상후가 받은 학점은?", o: ["F", "D+", "C", "B-"], a: 1},
+    {q: "장가희가 '장파희'로 개명하는 데 들인 돈은?", o: ["30만원", "70만원", "210만원", "400만원"], a: 1},
+    {q: "제상후가 과외에서 만난 강남 자사고 학생의 이름은?", o: ["이서연", "장가희", "윤진하", "미묘냥π"], a: 0},
+    {q: "제상후가 수능 전날 이서연에게 건넨 것은?", o: ["부적", "파이송이 담긴 USB", "냥코 피규어", "손편지"], a: 1},
+    {q: "헌팅포차에서 제상후가 찾던 것은?", o: ["가마토토", "장가희", "박보검", "흑슬리"], a: 0},
+    {q: "장가희가 제상후를 패기 위해 태권도에 박은 돈은?", o: ["30만원", "70만원", "210만원", "400만원"], a: 1},
+    {q: "장가희가 휠체어로 위장하며 사용한 음성합성에서 밝힌 이름은?", o: ["장가희", "장파희", "장…애인 가해 재밌다 희희", "GahiFlow"], a: 2},
+    {q: "장가희 휠체어의 비상탈출 버튼을 누른 결과는?", o: ["휠체어가 폭발", "장가희가 천장에 처박혀 사망", "시간여행", "아무 일도 없음"], a: 1},
+    {q: "장가희사우르스를 처치한 인물은?", o: ["제상후", "권영국", "윤진수", "플랑크상수맨"], a: 1},
+    {q: "박물관 진열장에 남은 화석의 이름은?", o: ["장가희사우르스", "Gahi-Rex", "정가혜사우르스(Gahe-Rex)", "파이사우르스"], a: 2},
+    {q: "장가희가 박보검 강연이라고 속이고 한 첫 행사의 시 주제는?", o: ["상보적결합", "플랑크상보", "파이결합", "양자결합"], a: 0},
+    {q: "장가희의 상보적결합 5행시에서 '보!'에 한 답은?", o: ["보검", "(침묵)", "보라색", "보로콜리"], a: 1},
+    {q: "플랑크상수맨의 본명은?", o: ["프랑수아", "프란츠", "플랑크", "진수"], a: 0},
+    {q: "플랑크상수맨이 결투를 신청한 주제는?", o: ["π vs 플랑크상수", "상수 vs 결합: 누가 더 낭만적인가", "무리수의 정의", "양자역학의 본질"], a: 1},
+    {q: "학식 줄에서 제상후가 새치기로 받아낸 식판은 몇 인분?", o: ["1인분", "2인분", "3인분", "4인분"], a: 2},
+    {q: "비만 측정 후 제상후의 체중은?", o: ["20π kg", "40π kg", "60π kg", "100π kg"], a: 0},
+    {q: "포노스 인턴십에서 제상후를 담당한 팀장은?", o: ["윤진하", "윤진수", "윤재억", "카재민"], a: 1},
+    {q: "포노스 회의에서 제상후가 윤진수에게 강요한 호칭은?", o: ["상사님", "제상사님", "제왕님", "회장님"], a: 1},
+    {q: "캠퍼스에서 제상후가 보인 기괴한 행동으로 인해 받은 별명은?", o: ["파이맨", "붕어남(상젖상)", "냥코남", "장풍이"], a: 1},
+    {q: "기숙사 사감의 이름은?", o: ["카재억", "카재민", "윤재억", "윤진수"], a: 1},
+    {q: "카재민이 제상후 방에서 발견한 것은?", o: ["술병", "8개의 모니터와 냥코·지메 동시 실행", "마약", "흙바지"], a: 1},
+    {q: "'상씻데이'는 매년 며칠인가?", o: ["1월 14일", "3월 14일", "4월 1일", "12월 25일"], a: 1},
+    {q: "장가희가 제상후 세면도구를 사느라 박은 돈은?", o: ["30만원", "70만원", "210만원", "400만원"], a: 1},
+    {q: "제상후의 유튜브 채널 닉네임은?", o: ["GahiFlow", "상풍이tv", "냥코맨", "파이TV"], a: 1},
+    {q: "커플 유튜브 최종 채널명은?", o: ["가상커플", "장가희와 살아있는 샌드백", "가희와 상후", "π커플"], a: 1},
+    {q: "이서연이 KAIST에 오게 된 경위는?", o: ["정시 합격", "편입", "정시로 서울대 의대 뚫었는데 수시 납치", "추천 입학"], a: 2},
+    {q: "권영국의 단골 대사는?", o: ["장!풍!", "그래서 제가 ~에게 레드카드를 보냅니다", "이예, ~", "닥치세요"], a: 1},
+    {q: "인천 과학 전람회에서 KAIST 팀이 실격된 사유는?", o: ["표절", "비언어적 물리 충돌", "발표 시간 초과", "무단 결석"], a: 1},
+    {q: "앰겸 교수의 모드가 아닌 것은?", o: ["콩겸모드", "창겸모드", "매춘겸모드", "신겸모드"], a: 3},
+    {q: "앰겸 교수의 어깨 폭은?", o: ["13.6cm", "23.6cm", "33.6cm", "43.6cm"], a: 1},
+    {q: "버거킹에서 제상후의 주문 번호는?", o: ["114번", "127번", "146번", "314번"], a: 2},
+    {q: "결혼식 간판에 적힌 문구는?", o: ["장가희 제상후 결혼식", "장가희 제상후 야외 결혼식", "냥코 페스티벌", "감정의 축제"], a: 1},
+    {q: "앰겸 교수의 흙바지 사건에서 흙(퇴비) 공급자로 지목된 인물은?", o: ["정우 딕", "김주사", "박준영", "권영국"], a: 2},
+    {q: "제상후가 알바한 편의점의 점장은?", o: ["윤진수", "윤진하", "윤재억", "카재민"], a: 2},
+    {q: "윤재억은 누구의 아버지인가?", o: ["카재민", "윤진하, 윤진수", "박준영", "권영국"], a: 1},
+    {q: "클럽에서 제상후를 납치하려던 마약사범들의 결말은?", o: ["제상후를 제압함", "제상후보다 덜 미쳐서 자수함", "도망감", "경찰에 체포됨"], a: 1},
+    {q: "카재민이 압수한 제상후의 핸드폰은 총 몇 대?", o: ["47대", "100대", "127대", "314대"], a: 2},
+    {q: "제상후가 총학생회 선거에서 얻은 득표율은?", o: ["50.0%", "78.6%", "98.6%", "100%"], a: 2},
+    {q: "냥코 계엄령에서 요구된 유저랭크는?", o: ["1000", "5000", "10000", "100000"], a: 2},
+    {q: "랜덤채팅에서 제상후와 매칭된 '미묘냥π'의 정체는?", o: ["장가희", "이서연", "앰겸 교수", "윤진하"], a: 2},
+    {q: "태울석림제 부스에서 제상후가 바꾼 부스명은?", o: ["냥코 체험소", "장품 체험소", "π 체험소", "감정 체험소"], a: 1},
+    {q: "시즌1 최종화에서 마지막 불꽃이 하늘에 그린 문양은?", o: ["하트", "냥코 얼굴", "π 문양", "별"], a: 2}
+  ];
+
+  let questions = QUESTIONS.slice();
+  let currentIdx = 0;
+  let correctCount = 0;
+  let wrongCount = 0;
+  let wrongQuestions = [];
+  let answered = false;
+
+  const startScreen = document.getElementById('start-screen');
+  const quizScreen = document.getElementById('quiz-screen');
+  const resultScreen = document.getElementById('result-screen');
+  const startBtn = document.getElementById('start-btn');
+  const shuffleToggle = document.getElementById('shuffle-toggle');
+  const questionText = document.getElementById('question-text');
+  const optionsContainer = document.getElementById('options-container');
+  const feedback = document.getElementById('feedback');
+  const nextBtn = document.getElementById('next-btn');
+  const progressText = document.getElementById('progress-text');
+  const scoreText = document.getElementById('score-text');
+  const progressBar = document.getElementById('progress-bar');
+  const restartBtn = document.getElementById('restart-btn');
+  const retryWrongBtn = document.getElementById('retry-wrong-btn');
+
+  function shuffle(arr) {
+    const a = arr.slice();
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  function startQuiz(qs) {
+    questions = qs;
+    currentIdx = 0;
+    correctCount = 0;
+    wrongCount = 0;
+    wrongQuestions = [];
+    startScreen.classList.add('hidden');
+    resultScreen.classList.add('hidden');
+    quizScreen.classList.remove('hidden');
+    renderQuestion();
+  }
+
+  function renderQuestion() {
+    answered = false;
+    const q = questions[currentIdx];
+    progressText.textContent = '문제 ' + (currentIdx + 1) + ' / ' + questions.length;
+    scoreText.textContent = '정답 ' + correctCount + ' · 오답 ' + wrongCount;
+    progressBar.style.width = Math.round((currentIdx / questions.length) * 100) + '%';
+
+    questionText.textContent = (currentIdx + 1) + '. ' + q.q;
+    optionsContainer.innerHTML = '';
+    feedback.style.display = 'none';
+    nextBtn.style.display = 'none';
+
+    q.o.forEach((opt, i) => {
+      const btn = document.createElement('button');
+      btn.className = 'option-btn';
+      btn.innerHTML = '<span class="option-num">' + (i + 1) + '.</span> ' + opt;
+      btn.onclick = () => handleAnswer(i, btn);
+      optionsContainer.appendChild(btn);
+    });
+  }
+
+  function handleAnswer(chosen, btn) {
+    if (answered) return;
+    answered = true;
+    const q = questions[currentIdx];
+    const buttons = optionsContainer.querySelectorAll('button');
+
+    buttons.forEach((b, i) => {
+      b.disabled = true;
+      if (i === q.a) {
+        b.classList.add('option-correct');
+      } else if (i === chosen) {
+        b.classList.add('option-wrong');
+      } else {
+        b.classList.add('option-faded');
+      }
+    });
+
+    if (chosen === q.a) {
+      correctCount++;
+      feedback.className = 'feedback feedback-correct';
+      feedback.textContent = '✓ 정답! 깍! 깍! 장! 풍!';
+    } else {
+      wrongCount++;
+      wrongQuestions.push(Object.assign({}, q, {chosen: chosen}));
+      feedback.className = 'feedback feedback-wrong';
+      feedback.textContent = '✗ 오답! 정답: ' + (q.a + 1) + '번 — ' + q.o[q.a];
+    }
+    feedback.style.display = 'block';
+    scoreText.textContent = '정답 ' + correctCount + ' · 오답 ' + wrongCount;
+    nextBtn.style.display = 'inline-block';
+    nextBtn.textContent = currentIdx === questions.length - 1 ? '결과 보기 →' : '다음 문제 →';
+  }
+
+  nextBtn.onclick = () => {
+    if (currentIdx < questions.length - 1) {
+      currentIdx++;
+      renderQuestion();
+    } else {
+      showResult();
+    }
+  };
+
+  function showResult() {
+    quizScreen.classList.add('hidden');
+    resultScreen.classList.remove('hidden');
+    const total = questions.length;
+    const rate = Math.round((correctCount / total) * 100);
+
+    document.getElementById('stat-correct').textContent = correctCount;
+    document.getElementById('stat-wrong').textContent = wrongCount;
+    document.getElementById('stat-rate').textContent = rate + '%';
+    document.getElementById('result-score').textContent = correctCount + ' / ' + total;
+
+    const emoji = document.getElementById('result-emoji');
+    const comment = document.getElementById('result-comment');
+    if (rate === 100) {
+      emoji.textContent = '완벽한 상소설 마스터';
+      comment.textContent = '제상후도 인정하는 진짜배기입니다. 깍! 깍! 깍!';
+    } else if (rate >= 90) {
+      emoji.textContent = '냥코클럽 명예회원급';
+      comment.textContent = '거의 다 맞았습니다. 통장에 400만원 박은 사람만큼 알고 있네요.';
+    } else if (rate >= 70) {
+      emoji.textContent = '카이스트 합격권';
+      comment.textContent = '훌륭합니다. π 100자리는 외울 수 있는 수준입니다.';
+    } else if (rate >= 50) {
+      emoji.textContent = '뻐끔뻐끔 수준';
+      comment.textContent = '절반은 맞췄네요. 다시 한 번 정독하면 좋겠어요.';
+    } else if (rate >= 30) {
+      emoji.textContent = '장가희 휠체어 AI급';
+      comment.textContent = '아아아아악! 분발이 필요합니다.';
+    } else {
+      emoji.textContent = '카이스트 학생 인증 실패';
+      comment.textContent = '혹시... 카이스트 입학확인증 확인해볼 수 있을까요?';
+    }
+
+    const review = document.getElementById('wrong-review');
+    if (wrongQuestions.length === 0) {
+      review.innerHTML = '<div style="text-align: center; padding: 1rem; color: #6b6b6b; font-size: 14px;">틀린 문제가 없습니다!</div>';
+      retryWrongBtn.style.display = 'none';
+    } else {
+      retryWrongBtn.style.display = 'inline-block';
+      let html = '<div class="review-title">틀린 문제 (' + wrongQuestions.length + '개)</div>';
+      html += '<div class="review-list">';
+      wrongQuestions.forEach((wq) => {
+        html += '<div class="review-item">';
+        html += '<div class="review-q">' + wq.q + '</div>';
+        html += '<div class="review-wrong-ans">내 답: ' + (wq.chosen + 1) + '. ' + wq.o[wq.chosen] + '</div>';
+        html += '<div class="review-correct-ans">정답: ' + (wq.a + 1) + '. ' + wq.o[wq.a] + '</div>';
+        html += '</div>';
+      });
+      html += '</div>';
+      review.innerHTML = html;
+    }
+  }
+
+  startBtn.onclick = () => {
+    const qs = shuffleToggle.checked ? shuffle(QUESTIONS) : QUESTIONS.slice();
+    startQuiz(qs);
+  };
+
+  restartBtn.onclick = () => {
+    const qs = shuffleToggle.checked ? shuffle(QUESTIONS) : QUESTIONS.slice();
+    startQuiz(qs);
+  };
+
+  retryWrongBtn.onclick = () => {
+    if (wrongQuestions.length > 0) {
+      const retryQs = wrongQuestions.map(wq => ({q: wq.q, o: wq.o, a: wq.a}));
+      startQuiz(shuffleToggle.checked ? shuffle(retryQs) : retryQs);
+    }
+  };
+})();
+</script>
+</body>
+</html>
